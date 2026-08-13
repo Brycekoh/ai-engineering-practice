@@ -46,6 +46,7 @@ Structured learning (Phases 1–18): ~460.5 hours. Phase 19 (Capstone Projects,
 |------|--------|------|------|
 | 2026-08-09 | Phase 1 / 01 Linear Algebra Intuition | 3/3 | Matrices-as-transformations was the sticking point ("it's hard to understand") until a diagram + worked example; then self-derived the row-by-row multiply. Strong on dot product, magnitude, rank (spotted rank via rows, not columns). Wanted the full formal treatment incl. Gram-Schmidt. Built the whole Vector/Matrix class and went beyond scope (matrix@matrix, transpose). Practice files now live in `my-practice/`. |
 | 2026-08-13 | Phase 1 / 02 Vectors, Matrices & Operations | 3/3 | Built full Matrix class from scratch: add, sub, scalar multiply, element-wise multiply, matmul, transpose, determinant, inverse, identity. Completed two-layer neural network forward pass exercise with correct shapes. Solid grasp of shape rules, det=0 meaning, and broadcasting. |
+| 2026-08-13 | Phase 1 / 03 Matrix Transformations | 3/3 | Rotation, scaling, shearing, reflection matrices. Composition (order matters). Determinant as area scaling factor. Eigenvalues/eigenvectors from scratch using characteristic equation. Eigendecomposition with NumPy. Connected eigenvalues to PCA, RNN stability, spectral methods. |
 
 ## Review queue
 <!-- /learn adds lessons the quizzes flag for review -->
