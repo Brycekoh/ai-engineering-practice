@@ -57,22 +57,35 @@ class Matrix:
 
     def __add__(self, other):
         # Add matching positions: self.data[i][j] + other.data[i][j]
-        return Matrix([self.data[   ]])
+        return Matrix([
+            [self.data[i][j] + other.data[i][j] for j in range(self.cols)]
+            for i in range(self.rows)
+        ])
 
 
     def __sub__(self, other):
-        pass
+        return Matrix([
+            [self.data[i][j] - other.data[i][j] for j in range(self.cols)]
+            for i in range(self.rows)
+        ])
+
 
     def scalar_multiply(self, scalar):
         # Multiply every element by scalar
-        pass
+        return Matrix([
+            [self.data[i][j] * scalar for j in range(self.cols)]
+            for i in range(self.rows)
+        ])
 
     def element_wise_multiply(self, other):
         # Multiply matching positions (NOT matrix multiply)
         #   | 1  2 |   | 5  6 |   |  5  12 |
         #   | 3  4 | * | 7  8 | = | 21  32 |
-        pass
-
+        return Matrix([
+        [self.data[i][j] * other.data[i][j] for j in range(self.cols)]
+        for i in range(self.rows)
+        ])
+    
     def matmul(self, other):
         # Matrix multiplication: each cell = dot product of row from self
         # with column from other.
@@ -80,12 +93,21 @@ class Matrix:
         #   | 3  4 | @ | 7  8 | = | 43  50 |
         #
         # Cell (i,j) = sum(self.data[i][k] * other.data[k][j] for k in range(self.cols))
-        pass
+        return Matrix([
+            [
+                sum(self.data[i][k] * other.data[k][j] for k in range(self.cols))
+                for j in range(other.cols)
+            ]
+            for i in range(self.rows)
+        ])
 
     def transpose(self):
         # Flip rows and columns: row i becomes column i.
         # A (2x3) becomes a (3x2).
-        pass
+        return Matrix([
+            [self.data[j][i] for j in range(self.rows)]
+            for i in range(self.cols)
+        ])
 
     def determinant(self):
         # 2x2: ad - bc
@@ -93,8 +115,8 @@ class Matrix:
         if self.shape == (1, 1):
             return self.data[0][0]
         if self.shape == (2, 2):
+            return self.data[0][0] * self.data[1][1] - self.data[0][1]*self.data[1][0]
             # return a*d - b*c
-            pass
         # General case (3x3 and up): cofactor expansion along row 0
         # det = 0
         # for j in range(self.cols):
@@ -108,7 +130,13 @@ class Matrix:
         #   1/det * | d  -b |
         #           | -c  a |
         # Raise ValueError if det == 0 (singular).
-        pass
+        det = self.determinant()
+        if det == 0:
+            raise ValueError("Matrix is singular, no inverse exists")
+        return Matrix([
+            [self.data[1][1] / det, -self.data[0][1] / det],
+            [-self.data[1][0] / det, self.data[0][0] / det]
+        ])
 
     @staticmethod
     def identity(n):
@@ -116,8 +144,10 @@ class Matrix:
         # identity(3) = | 1  0  0 |
         #               | 0  1  0 |
         #               | 0  0  1 |
-        pass
-
+        return Matrix([
+            [1 if i == j else 0 for j in range(n)]
+            for i in range(n)
+        ])
 
 # ---------------------------------------------------------------------------
 # Step 3 - See it work
@@ -161,28 +191,23 @@ if __name__ == "__main__":
     print()
     print("=== Neural network layer: relu(W @ x + b) ===")
 
-    random.seed(42)
-    inputs = Matrix([[0.5], [0.8], [0.2]])              # 3 features, 1 sample
+    inputs = Matrix([[0.5], [0.8], [0.2]])
     weights = Matrix([
-        [random.uniform(-1, 1) for _ in range(3)]
+        [random.uniform(-1,1) for _ in range(3)]
         for _ in range(2)
-    ])                                                   # 2 neurons, 3 inputs
-    bias = Matrix([[0.1], [0.1]])                        # 1 bias per neuron
+    ])
+    bias = Matrix([[0.1],[0.1]])
 
     def relu_matrix(m):
-        return Matrix([[max(0, val) for val in row] for row in m.data])
+        return Matrix([[max(0,val) for val in row ] for row in m.data])
 
-    pre_activation = weights.matmul(inputs)              # W @ x
-    with_bias = pre_activation + bias                    # + b
-    output = relu_matrix(with_bias)                      # relu(...)
+    pre_activation = weights.matmul(inputs) + bias
+    outputs = relu_matrix(pre_activation)
 
-    print(f"Input shape:    {inputs.shape}")              # (3, 1)
-    print(f"Weight shape:   {weights.shape}")             # (2, 3)
-    print(f"Output shape:   {output.shape}")              # (2, 1)
-    print(f"Output:         {output.data}")
-    print()
-    print("That's it. output = relu(W @ x + b). A dense layer.")
-
+    print(f"Input shape: {inputs.shape}")
+    print(f"Weight shape: {weights.shape}")
+    print(f"Output shape: {outputs.shape}")
+    print(f"Output: {outputs.data}")
     # -----------------------------------------------------------------------
     # Step 5 - NumPy comparison (same math, one-liners)
     # -----------------------------------------------------------------------
@@ -215,10 +240,34 @@ if __name__ == "__main__":
 
     # Ex 1: Verify the inverse. A @ A^-1 should give identity.
     #        Try 3 different 2x2 matrices. What happens when det = 0?
+    
+    m1 = Matrix([[1, 2], [3, 4]])
+    m2 = Matrix([[5, 6], [7, 8]])
+    m3 = Matrix([[2, 4], [1, 2]])
 
+    print(m1.matmul(m1.inverse_2x2()).data)  # should be [[1, 0], [0, 1]]
+    print(m2.matmul(m2.inverse_2x2()).data)  # should be [[1, 0], [0, 1]]
+
+    # when det = 0
+    try:
+        m3.matmul(m3.inverse_2x2())
+    except ValueError as e:
+        print(f"m3 inverse failed: {e}")
     # Ex 2: Build a TWO-layer network (no NumPy, just your Matrix class):
     #        input (3) -> hidden (4) -> output (2)
     #        Random weights, run a forward pass, verify all shapes.
     #        Hint: layer1 weights are (4 x 3), layer2 weights are (2 x 4)
+    x = Matrix([[0.5], [0.8], [0.2]])
+    W1 = Matrix([[random.uniform(-1,1) for _ in range(3)] for _ in range(4)])
+    B1 = Matrix([[random.uniform(-1,1) for _ in range(1)] for _ in range(4)])
+    W2 = Matrix([[random.uniform(-1,1) for _ in range(4)] for _ in range(2)])
+    B2 = Matrix([[random.uniform(-1,1) for _ in range(1)] for _ in range(2)])
 
-    print("Exercises: uncomment and implement when ready.")
+    #forward pass
+    hidden = relu_matrix(W1.matmul(x) + B1)
+    output = relu_matrix(W2.matmul(hidden) + B2)
+
+    print(f"Input shape:  {x.shape}")
+    print(f"Hidden shape: {hidden.shape}")
+    print(f"Output shape: {output.shape}")
+    print(f"Output: {output.data}")
