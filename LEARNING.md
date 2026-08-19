@@ -48,6 +48,7 @@ Structured learning (Phases 1–18): ~460.5 hours. Phase 19 (Capstone Projects,
 | 2026-08-13 | Phase 1 / 02 Vectors, Matrices & Operations | 3/3 | Built full Matrix class from scratch: add, sub, scalar multiply, element-wise multiply, matmul, transpose, determinant, inverse, identity. Completed two-layer neural network forward pass exercise with correct shapes. Solid grasp of shape rules, det=0 meaning, and broadcasting. |
 | 2026-08-13 | Phase 1 / 03 Matrix Transformations | 3/3 | Rotation, scaling, shearing, reflection matrices. Composition (order matters). Determinant as area scaling factor. Eigenvalues/eigenvectors from scratch using characteristic equation. Eigendecomposition with NumPy. Connected eigenvalues to PCA, RNN stability, spectral methods. |
 | 2026-08-14 | Phase 1 / 04 Calculus for ML | 3/3 | Numerical derivatives (central difference), partial derivatives, gradients. Gradient descent in 1D and 2D. Trained linear regression from scratch (discovered y=2x+1). Learning rate comparison (saw divergence at lr=1.0). Understands Hessian intractability and Jacobian as multi-output gradient. |
+| 2026-08-19 | Phase 1 / 05 Chain Rule & Autodiff | 3/3 | Built complete autograd engine (Value class) from scratch: forward/backward passes, topological sort, gradient accumulation. All operations (add, mul, pow, exp, log, tanh, relu). Built Neuron/Layer/MLP classes, trained on XOR. Gradient checking against numerical derivatives. Typed entire file manually. |
 
 ## Review queue
 <!-- /learn adds lessons the quizzes flag for review -->
